@@ -1,5 +1,5 @@
 #include QMK_KEYBOARD_H
-
+#include "quantum.h"
 
 #ifdef LAYOUT_split_3x6_3_ex2
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
