@@ -1,11 +1,130 @@
 #include "definitions.h"
 
-bool is_mac = false;
 bool is_russian = false;
 enum LAYERS active_default_layer = U_BASE;
 // bool is_snipe_mode = false;
 os_variant_t current_os = OS_WINDOWS;
 
+
+//
+// --- Tap Dance Logic ---
+// //
+// tap_dance_action_t tap_dance_actions[TAP_DANCE_ACTIONS_SIZE] = {
+//     // The bootloader/reset function is unique, so we keep it as is.
+//     [U_TD_BOOT]     = ACTION_TAP_DANCE_FN(u_td_fn_boot),
+//     // All layer setters now use our generic function and helper macro.
+//     [U_TD_U_BASE]   = TD_SET_LAYER(U_BASE),
+//     [U_TD_U_EXTRA]  = TD_SET_LAYER(U_EXTRA),
+//     [U_TD_U_TAP]    = TD_SET_LAYER(U_TAP),
+//     [U_TD_U_BUTTON] = TD_SET_LAYER(U_BUTTON),
+//     [U_TD_U_NAV]    = TD_SET_LAYER(U_NAV),
+//     [U_TD_U_MOUSE]  = TD_SET_LAYER(U_MOUSE),
+//     [U_TD_U_MEDIA]  = TD_SET_LAYER(U_MEDIA),
+//     [U_TD_U_NUM]    = TD_SET_LAYER(U_NUM),
+//     [U_TD_U_SYM]    = TD_SET_LAYER(U_SYM),
+//     [U_TD_U_FUN]    = TD_SET_LAYER(U_FUN)
+// };
+
+void install_tap_dance_entries(void) {
+    vial_tap_dance_entry_t td0 = { KC_NO, // Change layers
+                                   KC_NO,
+                                   QK_BOOT,
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td1 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_BASE),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td2 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_EXTRA),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td3 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_TAP),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td4 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_BUTTON),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td5 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_NAV),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td6 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_MOUSE),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td7 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_MEDIA),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td8 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_NUM),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td9 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_SYM),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td10 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   DF(U_FUN),
+                                   KC_NO,
+                                   TAPPING_TERM };
+    vial_tap_dance_entry_t td11 = { KC_NO, // / [ ? ]
+                                   KC_NO,
+                                   LANG_SW,
+                                   KC_NO,
+                                   TAPPING_TERM };
+
+
+    dynamic_keymap_set_tap_dance(0, &td0); // the first value corresponds to the TD(i) slot
+    dynamic_keymap_set_tap_dance(1, &td1);
+    dynamic_keymap_set_tap_dance(2, &td2);
+    dynamic_keymap_set_tap_dance(3, &td3);
+    dynamic_keymap_set_tap_dance(4, &td4);
+    dynamic_keymap_set_tap_dance(5, &td5);
+    dynamic_keymap_set_tap_dance(6, &td6);
+    dynamic_keymap_set_tap_dance(7, &td7);
+    dynamic_keymap_set_tap_dance(8, &td8);
+    dynamic_keymap_set_tap_dance(9, &td9);
+    dynamic_keymap_set_tap_dance(10, &td10);
+    dynamic_keymap_set_tap_dance(11, &td11);
+}
+
+void keyboard_post_init_user(void) {
+    install_tap_dance_entries();
+}
+
+void set_default_layer_td(tap_dance_state_t *state, void *user_data) {
+  // We only act on a double tap, just like before.
+  if (state->count == 2) {
+    // The 'user_data' pointer is repurposed to carry our layer number.
+    // We safely cast it back to an integer.
+    uint8_t layer = (uint8_t)(uintptr_t)user_data;
+
+    // Now we use the 'layer' variable to set the default layer.
+    default_layer_set((layer_state_t)1 << layer);
+    active_default_layer = layer;
+  }
+}
+
+// double tap to activate
+void u_td_fn_boot(tap_dance_state_t *state, void *user_data) {
+  if (state->count == 2) {
+    reset_keyboard();
+  }
+}
 
 void os_swap_animation(os_variant_t os) {
 #ifdef RGB_MATRIX_ENABLE
@@ -30,6 +149,9 @@ void os_swap_animation(os_variant_t os) {
 
 // Process detected host OS user (requires few hundred milliseconds)
 bool process_detected_host_os_user (os_variant_t detected_os) {
+    // print detected os
+    print("Detected OS: ");
+    print(detected_os == OS_MACOS ? "MacOS" : detected_os == OS_WINDOWS ? "Windows" : detected_os == OS_LINUX ? "Linux" : "Unknown");
     os_swap_animation(detected_os);
     switch (detected_os) {
         case OS_MACOS:
@@ -66,7 +188,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if (is_mac) {
                     register_code16(G(KC_C)); // Send Left GUI (Command) + C
                 } else {
-                   register_code16(LCTL(S(KC_C))); // Send Left Control + C
+                   register_code16(LCTL(KC_C)); // Send Left Control + C
                 }
                 return false; // We've handled this key, don't process it further
 
@@ -96,9 +218,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
             case U_RDO: // Our custom redo key
                 if (is_mac) {
-                    register_code16(G(KC_Z));// Send Left GUI (Command) + Z
+                    register_code16(LSG(KC_Z));// Send Left GUI (Command) + Z
                 } else {
-                    register_code16(C(KC_Z)); // Send Left Control + Z
+                    register_code16(RCS(KC_Z)); // Send Left Control + Z
                 }
 
             // case OS_SWAP: // Our OS toggle key
@@ -169,7 +291,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     } else { // On key release
          switch (keycode) {
             case U_CPY:
-                if (is_mac) { unregister_code16(G(KC_C)); } else { unregister_code16(LCTL(S(KC_C)));}
+                if (is_mac) { unregister_code16(G(KC_C)); } else { unregister_code16(LCTL(KC_C));}
                 break;
             case U_PST:
                 if (is_mac) { unregister_code16(G(KC_V)); } else { unregister_code16(C(KC_V)); }
@@ -181,7 +303,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 if (is_mac) { unregister_code16(G(KC_Z)); } else { unregister_code16(C(KC_Z)); }
                 break;
             case U_RDO:
-                if (is_mac) { unregister_code16(G(KC_Z)); } else { unregister_code16(C(KC_Z)); }
+                if (is_mac) { unregister_code16(LSG(KC_Z)); } else { unregister_code16(RCS(KC_Z)); }
                 break;
             case U_DOT:
                 // Unregister all possibilities to be safe

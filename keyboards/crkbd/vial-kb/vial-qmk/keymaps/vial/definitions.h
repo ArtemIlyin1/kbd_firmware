@@ -24,7 +24,7 @@ enum custom_keycodes {
     // _BASE, _NAV, etc...
 
     // Universal editing keys
-    U_CUT = SAFE_RANGE,
+    U_CUT = QK_KB_0,
     U_CPY,
     U_PST,
     U_UND,
@@ -55,7 +55,8 @@ enum tapDance {
     U_TD_U_MEDIA,
     U_TD_U_NUM,
     U_TD_U_SYM,
-    U_TD_U_FUN
+    U_TD_U_FUN,
+    U_TD_LANG_SW
 };
 
 //
@@ -63,16 +64,14 @@ enum tapDance {
 // We declare the variables here with 'extern' to tell other files
 // that they exist and are defined elsewhere (in logic.c).
 //
-
-extern bool is_mac;
+extern os_variant_t current_os;
 extern bool is_russian;
 extern enum LAYERS active_default_layer;
 #define TAP_DANCE_ACTIONS_SIZE 11
 extern tap_dance_action_t tap_dance_actions[TAP_DANCE_ACTIONS_SIZE];
-extern os_variant_t current_os;
 
-// #define KEY_OVERRIDE_COUNT 1
-// extern const key_override_t *key_overrides[KEY_OVERRIDE_COUNT + 1];
+#define KEY_OVERRIDE_COUNT 1
+extern const key_override_t *key_overrides[KEY_OVERRIDE_COUNT + 1];
 
 #define TD_SET_LAYER(layer) \
   { .fn = { NULL, set_default_layer_td, NULL }, .user_data = (void*)(uintptr_t)layer }

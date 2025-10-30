@@ -4,14 +4,16 @@
 #define VIAL_UNLOCK_COMBO_ROWS {0, 0}
 #define VIAL_UNLOCK_COMBO_COLS {0, 1}
 
+#define TAP_CODE_DELAY 5
+
 #define U_NP KC_NO // key is not present
 #define U_NA KC_NO // present but not available for use
 #define U_NU KC_NO // available but not used
 
 #undef DYNAMIC_KEYMAP_LAYER_COUNT
-#define DYNAMIC_KEYMAP_LAYER_COUNT 10
-#undef VIAL_TAP_DANCE_ENTRIES
-#define VIAL_TAP_DANCE_ENTRIES 32
+#define DYNAMIC_KEYMAP_LAYER_COUNT 16
+// #undef VIAL_TAP_DANCE_ENTRIES
+// #define VIAL_TAP_DANCE_ENTRIES 32
 
 // default but used in macros
 #undef TAPPING_TERM
@@ -29,3 +31,7 @@
 
 #define OS_DETECTION_KEYBOARD_RESET
 #define OS_DETECTION_SINGLE_REPORT
+
+#undef LAYER_STATE_8BIT
+// Increase layer limit (default is 8 layers)
+#define LAYER_STATE_16BIT
